@@ -19,4 +19,5 @@ the same iCloud Atlas library; duplicate imports are moved to Atlas's Trash.
 - Re-login to Savee: `python3 -I savee_atlas_sync.py login`
 
 No secrets live in this repo: the Savee token is in the Keychain and the Atlas key is
-read from the library's `.mcp-token` file.
+copied by `install.sh` from the library's `.mcp-token` file into the Keychain
+(rerun `install.sh` if you regenerate the key in Atlas).

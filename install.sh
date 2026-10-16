@@ -28,6 +28,9 @@ cat > "$PLIST" <<PL
 </plist>
 PL
 
+# The background job can't read Atlas's library files, so keep its key in the Keychain.
+/usr/bin/python3 -I "$DIR/savee_atlas_sync.py" atlas-key
+
 # Savee login lives in this Mac's Keychain; skip if already there.
 security find-generic-password -s savee-atlas-sync -a oauth >/dev/null 2>&1 \
   || /usr/bin/python3 -I "$DIR/savee_atlas_sync.py" login

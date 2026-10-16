@@ -394,12 +394,25 @@ def ensure_atlas():
     sys.exit("Atlas MCP unreachable (is Settings ▸ MCP ▸ Atlas MCP on?)")
 
 
-def atlas_token():
+def store_atlas_key():
+    """Copy the Atlas key from the library into the Keychain. Run from Terminal: launchd
+    jobs aren't allowed to read the library's files, but can read the Keychain."""
     paths = glob.glob(os.path.expanduser(ATLAS_TOKEN_GLOB))
     if not paths:
         sys.exit("Atlas key not found (no .mcp-token in an iCloud Drive .atlaslibrary)")
     with open(paths[0]) as f:
-        return f.read().strip()
+        key = f.read().strip()
+    subprocess.run(["security", "add-generic-password", "-U", "-s", KEYCHAIN_SERVICE, "-a", "atlas",
+                    "-w", key], check=True, capture_output=True)
+    print("Atlas key stored in Keychain under", KEYCHAIN_SERVICE)
+
+
+def atlas_token():
+    r = subprocess.run(["security", "find-generic-password", "-s", KEYCHAIN_SERVICE, "-a", "atlas", "-w"],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit("Atlas key not in Keychain. Run: savee_atlas_sync.py atlas-key")
+    return r.stdout.strip()
 
 
 def sync(dry=False):
@@ -462,6 +475,8 @@ if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "sync"
     if cmd == "login":
         login()
+    elif cmd == "atlas-key":
+        store_atlas_key()
     elif cmd == "dry-run":
         sync(dry=True)
     elif cmd == "sync":

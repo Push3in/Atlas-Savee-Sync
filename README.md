@@ -52,7 +52,8 @@ zsh ~/.local/share/savee-atlas-sync/install.sh
 2. opens Savee in your browser the first time so you can approve read access to your saves and
    boards (the token is stored in the Keychain),
 3. writes `~/Library/LaunchAgents/com.yan.savee-atlas-sync.plist` pointing at this folder and
-   starts it. It runs at login and then every hour.
+   starts it. It runs at login and then on the hour; if the Mac was asleep, the missed run happens
+   when it wakes.
 
 Run it again any time — after moving the folder, or after regenerating the key in Atlas.
 

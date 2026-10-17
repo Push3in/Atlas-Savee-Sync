@@ -18,7 +18,9 @@ cat > "$PLIST" <<PL
     <string>/usr/bin/python3</string><string>-I</string>
     <string>$DIR/savee_atlas_sync.py</string><string>sync</string>
   </array>
-  <key>StartInterval</key><integer>3600</integer>
+  <!-- On the hour by the clock, so a run missed during sleep happens on wake.
+       StartInterval would count only awake time. -->
+  <key>StartCalendarInterval</key><dict><key>Minute</key><integer>0</integer></dict>
   <key>RunAtLoad</key><true/>
   <key>ProcessType</key><string>Background</string>
   <key>LowPriorityIO</key><true/>

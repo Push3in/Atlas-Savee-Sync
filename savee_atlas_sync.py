@@ -10,9 +10,10 @@ Each Savee board maps to a collection of the same name inside the "Savee" folder
 (or "<name> (Savee)" when that name is already taken outside the folder). Saves on
 no board go to Unsorted. Only "savee"-tagged items and Savee-folder collections are touched.
 
-Several Macs can run this against the same iCloud library. Board mirroring is idempotent,
-and if two Macs import the same save before iCloud catches up, the next run moves the
-newer copy to Atlas's Trash. The Atlas key is read from the library's .mcp-token file.
+Run this on one Mac only. Atlas keeps the library in a single library.json that iCloud
+syncs as a whole file, so two Macs writing it overwrite each other's changes. If a save
+does get imported twice, the next run moves the newer copy to Atlas's Trash. The Atlas
+key is copied from the library's .mcp-token into the Keychain (atlas-key).
 """
 import base64, glob, hashlib, http.server, json, os, re, secrets, subprocess, sys, time
 import urllib.parse, urllib.request, urllib.error, webbrowser

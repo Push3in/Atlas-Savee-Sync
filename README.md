@@ -8,7 +8,7 @@ It's a single Python script run by macOS `launchd`. It talks to Savee's MCP serv
 Atlas's local MCP server directly — no Claude, no extra dependencies, nothing to keep open.
 
 ```
-Savee (online) ──► savee_atlas_sync.py (hourly, on any Mac) ──► Atlas library (iCloud) ──► every Mac
+Savee (online) ──► savee_atlas_sync.py (hourly, on one Mac) ──► Atlas library (iCloud) ──► every Mac
 ```
 
 ## What a run does
@@ -74,12 +74,21 @@ A healthy run in the log ends with `done: N/N imported` and `boards mirrored: �
 
 ## Several Macs
 
-Install it on every Mac that opens the same iCloud Atlas library. Whichever Mac is awake does the
-sync, so saves made in the evening on a home Mac still get filed while the work Mac sleeps.
+Install it on **one Mac only**, ideally the one that's awake most. The library lives in iCloud, so
+every other Mac still gets the imported saves and board changes; they just don't run the sync.
+Saves are filed whenever that one Mac is awake, and runs missed while it sleeps happen on wake.
 
-The Macs don't coordinate. Board mirroring gives the same result whichever Mac runs it, so they
-never fight. The one overlap is when both import the same new save before iCloud has synced the
-other's copy; the next run keeps the older item and moves the newer one to Trash.
+Running it on more than one Mac loses data. Atlas keeps the whole library (items, tags,
+collections) in a single `library.json`, and iCloud syncs whole files: when two Macs each save
+their own version, the one uploaded last replaces the other, and everything the other Mac added
+since its last sync is gone. Hourly runs on two Macs make that likely, and both run on the hour.
+
+The same applies to using Atlas itself: quit it on one Mac before working in it on another, and
+let iCloud finish syncing first. Atlas keeps a copy of `library.json` in the library's `backups`
+folder before changes, which is how lost items can be found and merged back.
+
+If the same save does get imported twice, the next run keeps the older item and moves the newer
+one to Trash.
 
 ## Troubleshooting
 

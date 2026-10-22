@@ -379,20 +379,12 @@ def mirror_boards(atlas, savee, dry):
 
 
 def ensure_atlas():
-    def up():
-        try:
-            MCP(ATLAS_MCP, atlas_token())._send("ping")
-            return True
-        except Exception:
-            return False
-    if up():
-        return
-    subprocess.run(["open", "-g", "-a", "Atlas"])
-    for _ in range(15):
-        time.sleep(2)
-        if up():
-            return
-    sys.exit("Atlas MCP unreachable (is Settings ▸ MCP ▸ Atlas MCP on?)")
+    """Never launch Atlas: an instance left open in the background keeps a stale copy of
+    library.json in memory and later saves it over newer changes from other Macs."""
+    try:
+        MCP(ATLAS_MCP, atlas_token())._send("ping")
+    except Exception:
+        sys.exit("Atlas not running, skipping this run (open Atlas to sync; check Settings ▸ MCP is on)")
 
 
 def store_atlas_key():

@@ -5,7 +5,8 @@ your new Savee saves and files each one into the Atlas collection that matches i
 Re-board something in Savee and it moves in Atlas on the next run.
 
 It's a single Python script run by macOS `launchd`. It talks to Savee's MCP server and to
-Atlas's local MCP server directly — no Claude, no extra dependencies, nothing to keep open.
+Atlas's local MCP server directly — no Claude, no extra dependencies. It only syncs while Atlas is
+open on that Mac; it never launches Atlas itself (see [Several Macs](#several-macs)).
 
 ```
 Savee (online) ──► savee_atlas_sync.py (hourly, on one Mac) ──► Atlas library (iCloud) ──► every Mac
@@ -84,7 +85,9 @@ their own version, the one uploaded last replaces the other, and everything the 
 since its last sync is gone. Hourly runs on two Macs make that likely, and both run on the hour.
 
 The same applies to using Atlas itself: quit it on one Mac before working in it on another, and
-let iCloud finish syncing first. Atlas keeps a copy of `library.json` in the library's `backups`
+let iCloud finish syncing first. An Atlas left open in the background doesn't pick up the newer
+`library.json` from iCloud: it keeps its old copy in memory and saves it over the newer one on its
+next change. That's why the sync never launches Atlas — it skips the run when Atlas is quit. Atlas keeps a copy of `library.json` in the library's `backups`
 folder before changes, which is how lost items can be found and merged back.
 
 If the same save does get imported twice, the next run keeps the older item and moves the newer
@@ -96,7 +99,7 @@ one to Trash.
 |---|---|
 | `Not logged in to Savee` / `token refresh failed` | `python3 -I savee_atlas_sync.py login` |
 | `Atlas key not in Keychain` | `zsh install.sh` |
-| `Atlas MCP unreachable` | Open Atlas and check Settings ▸ Developers ▸ MCP is on |
+| `Atlas not running, skipping this run` | Normal when Atlas is quit. Open Atlas to sync; check Settings ▸ Developers ▸ MCP is on |
 | HTTP 401 from Atlas | The key was regenerated in Atlas — `zsh install.sh` |
 | `FAILED mirroring boards: … boards:read` | Log in again and approve board access |
 | `no "Savee" collection folder` | Create a collection folder named Savee in Atlas |
